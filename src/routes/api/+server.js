@@ -1,15 +1,10 @@
-/** @type {import('@sveltejs/adapter-vercel').Config} */
-export const config = {
-	runtime: 'edge'
-};
-
-
 // @ts-nocheck
-import { Low } from 'lowdb'
-import { JSONFile, JSONPreset } from 'lowdb/node'
+import { JSONPreset } from 'lowdb/node'
 import { json } from '@sveltejs/kit';
 
+import { io } from 'socket.io-client'
 
+const socket = io("ws://localhost:3000")
 
 
 const layout = [
@@ -40,7 +35,7 @@ export async function POST({ request, cookies }) {
 		case "putBlock":
 			db.data.FOREST[data.row][data.col] = data.block
 			await db.write()
-			console.log("update");
+			socket.emit('action', {row: data.row, col: data.col, result: db.data.FOREST[data.row][data.col]})
 			return json(db.data.FOREST[data.row][data.col]);
 			break;
 		default:

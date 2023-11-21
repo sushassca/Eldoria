@@ -1,10 +1,17 @@
 <script>
-
-import {
-    onMount
-} from "svelte";
-
 let data = null
+
+import { onMount } from "svelte";
+
+import {io} from 'socket.io-client'
+
+const socket = io()
+
+socket.on('eventFromServer', (message) => {
+    const { row , col, result} = message
+    data[row][col] = result
+})
+
 
 async function fetchData() {
     try {
@@ -50,10 +57,7 @@ function handleClick(row, col) {
         body: JSON.stringify(obj)
     };
 
-    fetch('http://localhost:5173/api', options)
-        .then(response => response.json())
-        .then(response => console.log(response))
-        .catch(err => console.error(err));
+    fetch('/api', options)
 }
 </script>
 
