@@ -1,3 +1,9 @@
+/** @type {import('@sveltejs/adapter-vercel').Config} */
+export const config = {
+	runtime: 'edge'
+};
+
+
 // @ts-nocheck
 import { Low } from 'lowdb'
 import { JSONFile, JSONPreset } from 'lowdb/node'
