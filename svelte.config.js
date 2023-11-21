@@ -1,9 +1,10 @@
-import adapter from '@sveltejs/adapter-vercel@1.0.0-next.34';
+import adapter from '@sveltejs/adapter-vercel';
 
-export default {
+/** @type {import('@sveltejs/kit').Config} */
+const config = {
 	kit: {
-		adapter: adapter({
-			// see the 'Deployment configuration' section below
-		})
+		adapter: adapter()
 	}
 };
+
+export default config;
