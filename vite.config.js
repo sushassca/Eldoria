@@ -4,11 +4,11 @@ import { webSocketServer } from './socket/webSocketPluginVite';
 /** @type {import('vite').UserConfig} */
 const config = {
     server: {
-        port: 3000,
+        port: 443,
         host: true
     },
     preview: {
-        port: 3000
+        port: 443
     },
     plugins: [sveltekit(), webSocketServer]
 };

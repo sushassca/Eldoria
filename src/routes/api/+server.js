@@ -2,9 +2,6 @@
 import { JSONPreset } from 'lowdb/node'
 import { json } from '@sveltejs/kit';
 
-import { io } from 'socket.io-client'
-
-const socket = io("ws://localhost:3000")
 
 
 const layout = [
@@ -35,8 +32,8 @@ export async function POST({ request, cookies }) {
 		case "putBlock":
 			db.data.FOREST[data.row][data.col] = data.block
 			await db.write()
-			socket.emit('action', {row: data.row, col: data.col, result: db.data.FOREST[data.row][data.col]})
-			return json(db.data.FOREST[data.row][data.col]);
+			console.log("+server.js");
+			return json({row: data.row, col: data.col, result:db.data.FOREST[data.row][data.col]});
 			break;
 		default:
 			return json(db.data.FOREST);

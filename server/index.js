@@ -1,19 +1,22 @@
-// server.js
+import express from 'express'
+import { createServer } from 'http'
 
-import http from 'http';
-import express from 'express';
 import injectSocketIO from '../socket/socketIoHandler.js';
-import { handler } from '../build/handler.js';
 
-const app = express();
-const server = http.createServer(app);
+import { handler } from '../build/handler.js'
+
+const port = 443
+const app = express()
+const server = createServer(app)
+
+// Middleware to serve static files (if needed)
+app.use(express.static('public'));
 
 // Inject SocketIO
 injectSocketIO(server);
 
-// SvelteKit handlers
-app.use(handler);
+app.use(handler)
 
-server.listen(3000, () => {
-    console.log('Running on http://localhost:3000');
-});
+
+
+server.listen(port)

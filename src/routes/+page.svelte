@@ -1,17 +1,14 @@
 <script>
-let data = null
+let data = []
+import {
+    onMount
+} from "svelte";
 
-import { onMount } from "svelte";
+import {
+    io
+} from 'socket.io-client'
 
-import {io} from 'socket.io-client'
-
-const socket = io()
-
-socket.on('eventFromServer', (message) => {
-    const { row , col, result} = message
-    data[row][col] = result
-})
-
+const socket = io('https://eldoria.dipsit.pt/')
 
 async function fetchData() {
     try {
@@ -25,10 +22,19 @@ async function fetchData() {
 // Call the fetch function when the component is mounted
 onMount(async () => {
     data = await fetchData();
+
     loops = Array.from({
         length: data.length
     }, (_, index) => index)
-    console.log(data);
+
+    if (socket) {
+        socket.on('eventFromServer', (message) => {
+            const { row, col, result } = message
+            data[row][col] = result
+        })
+    }
+
+
 });
 
 const height = 500;
@@ -38,6 +44,10 @@ $: loops = Array.from({
     length: 0
 }, (_, index) => index)
 
+/**
+ * @param {number} row
+ * @param {number} col
+ */
 function handleClick(row, col) {
 
     const oposite = (data[row][col][0] === "f1") ? "f2" : "f1"
@@ -58,6 +68,23 @@ function handleClick(row, col) {
     };
 
     fetch('/api', options)
+        .then(response => {
+            // Check if the response status is OK (200-299)
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            // Parse the JSON in the response
+            return response.json();
+        })
+        .then(data => {
+            // Handle successful response
+            console.log(data);
+            socket.emit('action', data)
+        })
+        .catch(error => {
+            // Handle errors
+            console.error('Error:', error);
+        });
 }
 </script>
 
