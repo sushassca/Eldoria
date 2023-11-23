@@ -11,7 +11,7 @@ const assets = { ...buildings, ...enviroment }
 import { onMount } from "svelte";
 import { io } from 'socket.io-client'
 
-import { sfloor, sasset, isToolsOpen, scale } from "../storages/storage"
+import { sfloor, sasset, scale } from "../storages/storage"
 import Tools from "../components/tools.svelte";
 
 const socket = io()
@@ -64,8 +64,6 @@ onMount(async () => {
 
     setTimeout(() => {
         loading = false
-
-       
     }, 600);
 });
 
@@ -79,20 +77,14 @@ $: loops = Array.from({
 // handles
 const handleClick = (row, col) => {
 
-    if ($isToolsOpen === "false") {
-        console.log("Tools Closed! Won't Update!");
-        console.log({row, col});
-    }
-
-
-
-    const block = {
+        const block = {
         type: "putBlock",
         row,
         col,
         block: [$sfloor, $sasset]
     }
     postData(block)
+   
 }
 
 
@@ -117,13 +109,48 @@ const handleWheel = (event) =>{
 }
 
 
+let isPressed = false;
+let startX = 0;
+let startY = 0;
+let distanceX = 0;
+let distanceY = 0;
+
+function handleMouseDown(event) {
+  isPressed = true;
+
+  startX = event.clientX - distanceX;
+  startY = event.clientY - distanceY;
+}
+
+function handleMouseUp() {
+  isPressed = false;
+}
+
+const treshold = 10
+let counter = 0
+function handleMouseMove(event) {
+    counter = (counter < treshold) ? ++counter : 0
+
+    if (isPressed && counter == treshold) {
+      const currentX = event.clientX;
+      const currentY = event.clientY;
+     // Calculate distances moved
+      distanceX = currentX - startX;
+      distanceY = currentY - startY;
+
+     // Update the starting position for the next move
+      startX = currentX - distanceX;
+      startY = currentY - distanceY;
+     // Now, distanceX and distanceY contain the cumulative distances moved
+    }
+}
 
 </script>
 
 
-<div on:wheel={handleWheel} style={`grid-template-columns: repeat(1, 1fr);`} class="wrapper center">
-
-    <div id="map" style={`grid-template-columns: repeat(${data?.length}, 1fr); --square-size: ${data?.length}; --scale-factor: ${$scale}`}>
+<!-- svelte-ignore a11y-no-static-element-interactions -->
+<div on:wheel={handleWheel} on:mousemove={handleMouseMove} on:mousedown={handleMouseDown} on:mouseup={handleMouseUp} style={`grid-template-columns: repeat(1, 1fr);`} class={`wrapper center`}>
+    <div id="map" style={`grid-template-columns: repeat(${data?.length}, 1fr); --square-size: ${data?.length}; --scale-factor: ${$scale}; left:${distanceX}px; top:${distanceY}px;`}>
         {#each loops as row}
             <!-- svelte-ignore a11y-no-static-element-interactions -->
             {#each loops as col}

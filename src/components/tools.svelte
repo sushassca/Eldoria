@@ -44,7 +44,7 @@
                 <h3>{section.el}</h3>
                 <div class="grid">
                     {#each Object.values(section.items) as item}
-                        <button id={item.id} on:mouseover={() => {console.log(item.id)}} on:click={() => {handleItem(section.type, item.id)}} class={($sfloor == item.id || $sasset == item.id) ? "item focus" : "item"} >
+                        <button id={item.id} on:click={() => {handleItem(section.type, item.id)}} class={($sfloor == item.id || $sasset == item.id) ? "item focus" : "item"} >
                             <img src={item.src} alt={item.id}>
                         </button>
                     {/each}
